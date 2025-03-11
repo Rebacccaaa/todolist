@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+</head>
+<style scoped>
+  body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-color: #f0f8ff; /* baby blue */
+    color: #4a4a4a;
+    line-height: 1.6;
+  }
+  
+  #app {
+    max-width: 600px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border: 5px solid #87ceeb; /* light sky blue */
+    border-radius: 15px;
+  }
+  
+  h1 {
+    color: #568dc4; /* deep sky blue */
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    background-color: #cce9ed; /* powder blue, slightly darker than baby blue */
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .completed {
+    text-decoration: line-through;
+  }
+  
+  input[type="text"] {
+    border: 1px solid #e0e0e0;
+    padding: 5px;
+    border-radius: 3px;
+    margin-right: 5px;
+  }
+  
+  input[type="text"]:focus {
+    border-color: #87ceeb;
+    box-shadow: 0 0 3px rgba(147, 181, 195, 0.5);
+  }
+  
+  button {
+    background-color: #87ceeb; /* light sky blue */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 50px; /* make the buttons round */
+  }
+  
+  button:hover {
+    background-color:  #87ceeb; /* deep sky blue */
+  }
+  
+  .task-counter {
+    color: #757575;
+    text-align: center;
+    margin-top: 20px;
+  }
+</style>
+
+
+<body>
+    <div id="app">
+        <h1>栗子今天做乜嘢？</h1>
+        <ul>
+            <li v-for="(task, index) in list" :key="task.id">
+                <input type="checkbox" v-model = 'task.completed'/>
+                <span :class="{ completed: task.completed }" >{{ task.title }}</span>
+                <button @click="removeTask(index)">删除</button>
+            </li>
+        </ul>
+        <input type="text" v-model="todotask" placeholder="添加新任务" @keyup.enter="addTask"> <button @click="addTask" >添加任务</button> <button @click="clearTasks">清空任务</button><br><br>
+        当前任务数量:{{this.list.length}}
+    </div>
+    
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+</body>
+<script>
+    new Vue({
+      el: '#app',
+      data: {
+        list: [],
+        todotask: ''
+      },
+      methods: {
+        addTask() {
+          if(this.todotask.trim()===''){
+            alert('姐，空的！你啥也没写')
+            return
+          }
+          this.list.push({
+            id: new Date(),
+            title: this.todotask,
+            completed: false
+          });
+          this.todotask = '';
+        },
+        removeTask(index) {
+          if(confirm('确定删除吗？姐')) {
+            this.list.splice(index, 1)
+          }
+        },
+        clearTasks() {
+          if(confirm('清空？是新的一天吗？Hava a nice day!')) {
+            this.list = [];
+          }
+          
+        }
+      },
+      computed: {
+        incompleteTasks() {
+          return this.list.filter(task => !task.completed).length;
+        }
+      },
+      created() {
+        this.list = JSON.parse(localStorage.getItem('todoList')) || []
+      },
+    watch: {
+      list: {
+        handler(newVal) {
+          localStorage.setItem('todoList', JSON.stringify(newVal))
+        },
+        deep: true
+      }
+    }
+    });
+    </script>
+    
+<style scoped>
+    .completed {
+        /* line-through 值表示在文本上添加一条贯穿的线。 */
+        text-decoration: line-through;
+    }
+</style>
+
+</html>
